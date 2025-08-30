@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { dashboard, login, register } from '@/routes';
+import { dashboard, login, register,test } from '@/routes';
 import { Head, Link } from '@inertiajs/vue3';
 </script>
 
@@ -24,6 +24,12 @@ import { Head, Link } from '@inertiajs/vue3';
                         class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
                     >
                         Log in
+                    </Link>
+                    <Link
+                        :href="test()"
+                        class="inline-block rounded-sm border border-transparent px-5 py-1.5 text-sm leading-normal text-[#1b1b18] hover:border-[#19140035] dark:text-[#EDEDEC] dark:hover:border-[#3E3E3A]"
+                    >
+                        Test
                     </Link>
                     <Link
                         :href="register()"

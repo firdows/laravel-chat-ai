@@ -32,12 +32,12 @@ Route::prefix('todos')->group(function () {
 })->middleware(['auth', 'verified']);
 
 
-
-
 Route::get('/test', [TestController::class, 'index'])->name('test');
+Route::post('/test/chat', [TestController::class, 'chat'])->name('test.chat');
+Route::post('/test', [TestController::class, 'store'])->name('test.store');
+// Route::post('/api/chat', [TestController::class, 'store'])->name('chat');
 
 Route::prefix('about')->group(function () {
-
     Route::get('', [AboutController::class, 'index'])->name('about');
 });
 

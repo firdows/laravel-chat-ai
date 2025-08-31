@@ -93,14 +93,11 @@ const handleSubmit = (e: Event) => {
                 </div>
             </div>
 
-            <form @submit="handleSubmit">
-                <input
-                    class="fixed bottom-0 mb-8 w-full max-w-md rounded border border-gray-300 p-2"
-                    v-model="input"
-                    placeholder="Say something..."
-                />
-            </form>
+            <div class="border-t p-4">
+                <form @submit="handleSubmit" class="flex items-center gap-2">
+                    <input class="flex-1 rounded-xl bg-white px-4 py-2" v-model="input" placeholder="Say something..." />
+                </form>
+            </div>
         </div>
-        <!-- </div> -->
     </AppLayout>
 </template>

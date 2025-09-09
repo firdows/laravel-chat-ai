@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\History;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Prism\Prism\Enums\ChunkType;
 use Prism\Prism\Prism;
 use Prism\Prism\Enums\Provider;
+use Prism\Prism\Enums\ToolChoice;
 use Prism\Prism\Exceptions\PrismException;
+use Prism\Prism\Facades\Tool;
 use Prism\Prism\ValueObjects\Messages\AssistantMessage;
 use Prism\Prism\ValueObjects\Messages\UserMessage;
 use Throwable;
@@ -67,10 +71,10 @@ class ChatController extends Controller
 
             // return ['messages' => [$response->text]];
             // return response()->json(['reply' => $response->text]);
-
+            $tools = $this->makeTools();
 
             /** @disregard [OPTIONAL CODE] [OPTIONAL DESCRIPTION] */
-            return response()->stream(function () use ($userText, $historyMessage, $userId) {
+            return response()->stream(function () use ($userText, $historyMessage, $userId, $tools) {
                 // return response()->eventStream(function () use ($userText) {
                 // $stream = Prism::text()
                 //     ->using(Provider::OpenAI, 'gpt-4.1-nano')
@@ -86,11 +90,15 @@ class ChatController extends Controller
                 //     ])->asStream();
 
                 $stream = Prism::text()
-                    // ->using(Provider::OpenAI, 'gpt-4.1-nano')
-                    ->using(Provider::Ollama, 'qwen2.5:0.5b')
+                    ->using(Provider::OpenAI, 'gpt-4.1-nano')
+                    // ->using(Provider::Ollama, 'qwen2.5:0.5b')
                     ->usingTemperature(0.2) // ถ้า gpt-4 จะปรับ temperature ได้ตามปกติ
-                    ->withSystemPrompt('คุณเป็นผู้ช่วยด้านการเขียนโค้ด Laravel Framework ใช้ภาษาทางการ กระชับ ชัดเจน')
+                    // ->withSystemPrompt('คุณเป็นผู้ช่วยด้านการเขียนโค้ด Laravel Framework ใช้ภาษาทางการ กระชับ ชัดเจน')
+                    ->withSystemPrompt('คุณเป็นผู้ช่วยส่วนตัวด้านการเขียนโปรแกรม และผู้เชี่ยวชาญด้านสภาพอากาศ ใช้ภาษาทางการ กระชับ ชัดเจน')
                     ->withMessages($historyMessage)
+                    ->withMaxSteps(2)
+                    ->withTools($tools)
+                    ->withToolChoice(ToolChoice::Auto)
                     ->withClientRetry(3, 100)
                     ->withClientOptions(['timeout' => 30])
                     ->withProviderOptions([
@@ -153,5 +161,86 @@ class ChatController extends Controller
         } catch (Throwable $e) {
             Log::error('Generic error:', ['error' => $e->getMessage()]);
         }
+    }
+
+
+    /**
+     * Tools & function Calling
+     *
+     * https://prismphp.com/core-concepts/tools-function-calling.html#tool-concept-overview
+     */
+    private function makeTools()
+    {
+        $weatherTool = Tool::as('weather')
+            ->for('Get current weather conditions')
+            ->withStringParameter('city', 'The city to get weather for')
+            ->using(function (string $city): string {
+                // Your weather API logic here
+                return "The weather in {$city} is sunny and 72°F.";
+            });
+
+        // $searchTool = Tool::as('user')
+        //     ->for('ค้นหาข้อมูลผู้ใช้งานในระบบด้วยการใช้รหัสผู้ใช้งาน')
+        //     ->withStringParameter('user_id', 'คิวรีสำหรับค้นหาผู้ใช้ด้วยรหัส')
+        //     ->using(function (string $user_id): string {
+        //         // Your search implementation
+        //         $user = User::find($user_id);
+        //         return $user;
+        //     });
+
+        /**
+         * Search database
+         */
+        $searchTool = Tool::as('user')
+            ->for('ค้นหาข้อมูลผู้ใช้งานในระบบด้วยการใช้รหัสผู้ใช้งาน')
+            ->withStringParameter('user_id', 'คิวรีสำหรับค้นหาผู้ใช้ด้วยรหัส')
+            ->using(function (string $user_id): string {
+                // Your search implementation
+                $user = User::where($user_id)->select('id', 'name', 'email', 'created_at')->first();
+                return json_encode([
+                    'ok' => true,
+                    'data' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'created_at' => $user->created_at->toISOString(),
+                    ]
+                ], JSON_UNESCAPED_UNICODE);
+            });
+
+        /**
+         *  Call restfull API
+         * https://api.codingthailand.com/api/course
+         */
+
+        $apiTool = Tool::as('course')
+            ->for('ค้นหาข้อมูลคอร์สเรียนจากเว็บ codingthailand.com')
+            ->withStringParameter('course', 'คิวรีสำหรับค้นหาผู้ใช้ด้วยรหัส')
+            ->using(function (string $course): string {
+                // Your search implementation
+
+                $response = Http::timeout(30)->retry(2, 100)->get('https://api.codingthailand.com/api/course');
+
+                if ($response->failed()) {
+                    return json_encode([
+                        'error' => true,
+                        'message' => 'ไม่พบข้อมูล'
+                    ], JSON_UNESCAPED_UNICODE);
+                }
+
+                $rows = collect(data_get($response->json(), 'data'), [])->map(fn($c) => [
+                    'course_title' => (string) data_get($c, 'title', ''),
+                    'course_detail' => (string) data_get($c, 'detail', ''),
+                    'course_view_count' => (string) data_get($c, 'view', 0),
+                    'course_created_at' => (string) data_get($c, 'date', ''),
+                ])->take(100)->values();
+
+                return $rows->toJson(JSON_UNESCAPED_UNICODE);
+            });
+
+
+
+
+        return [$weatherTool, $searchTool, $apiTool];
     }
 }

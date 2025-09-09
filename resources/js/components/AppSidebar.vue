@@ -4,10 +4,11 @@ import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { about, dashboard, test } from '@/routes';
+import { index as chatIndex } from '@/routes/chat';
 import { index as todosIndex } from '@/routes/todos';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, EqualApproximately, Folder, LayoutGrid, ListCheck } from 'lucide-vue-next';
+import { BookOpen, BotMessageSquare, EqualApproximately, Folder, LayoutGrid, ListCheck } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -15,6 +16,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Chat AI',
+        href: chatIndex(),
+        icon: BotMessageSquare,
     },
     {
         title: 'About',

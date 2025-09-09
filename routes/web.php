@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\TodoController;
@@ -21,7 +22,13 @@ Route::get('/', function () {
 
 Route::prefix('dashboard')->group(function () {
     Route::get('', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/chat', [DashboardController::class, 'chat'])->name('dashboard.chat');
+    // Route::post('/chat', [DashboardController::class, 'chat'])->name('dashboard.chat');
+})->middleware(['auth', 'verified']);
+
+Route::prefix('chat')->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/', [ChatController::class, 'store'])->name('chat.store');
+    Route::post('/message', [ChatController::class, 'chat'])->name('chat.message');
 })->middleware(['auth', 'verified']);
 
 Route::prefix('todos')->group(function () {

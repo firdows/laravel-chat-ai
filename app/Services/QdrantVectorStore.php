@@ -44,7 +44,7 @@ class QdrantVectorStore
             $existsResp = $this->client->collections($this->collection)->exists();
 
             $exists = is_bool($existsResp) ? $existsResp : (bool)data_get($existsResp, 'result.exits', false);
-            if ($exists === false) {
+            if ($exists) {
                 return;
             }
         } catch (\Throwable $e) {

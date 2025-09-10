@@ -40,4 +40,25 @@ class RagService
 
         return ['doc_id' => $docId, 'chunks' => count($chunks)];
     }
+
+
+    public function retrieve(string $query)
+    {
+        $vector = $this->embedding->embedOne($query, config('services.rag.embed_model'));
+        return $this->store->search($vector, (int)config('services.rag.top_k'));
+    }
+
+
+    public function askRag(string $question)
+    {
+        $result = $this->retrieve($question);
+        return [
+            'contexts' => $this->buildContextText($result)
+        ];
+    }
+
+    public function buildContextText(array $result): string
+    {
+        return collect($result)->pluck('text')->map(fn($t, $i) => 'snippet #' . ($i + 1) . " " . $i)->join("\n\n");
+    }
 }

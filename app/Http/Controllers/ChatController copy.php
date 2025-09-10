@@ -35,46 +35,69 @@ class ChatController extends Controller
 
     public function chat(Request $request)
     {
+        // $messagePayload = (array) $request->input('messages', []);
+        $messagesPayload = (array) $request->input('messages', []);
+        $lastUser = collect($messagesPayload)->reverse()->firstWhere('role', 'user') ?? [];
+
+        $userText = $lastUser['content'] ?? collect(Arr::get($lastUser, 'parts', []))->where('type', 'text')->pluck('text')->implode('\n');
+
+
+        if ($userText == null) {
+            // dd($messagesPayload);
+            return [];
+        }
+        $userId = Auth::user()->id;
+        History::create([
+            'user_id' => $userId,
+            'role' => 'user',
+            'parts' => [ChunkType::Text->value => $userText]
+        ]);
+        $historyMessage = History::where('user_id', $userId)
+            ->where('role', 'user')
+            ->where('created_at', '>=', Carbon::now('-02:00'))->orderBy('created_at')->get()
+            ->map(fn(History $history): UserMessage|AssistantMessage => match ($history->role) {
+                'user' => new UserMessage(content: $history->parts['text'] ?? ''),
+                'assistant' => new AssistantMessage(content: $history->parts['text'] ?? ''),
+            })->toArray();
+
+
+        // dd($historyMessage);
+
+
         try {
-            $messagesPayload = (array) $request->input('messages', []);
-            $lastUser = collect($messagesPayload)->reverse()->firstWhere('role', 'user') ?? [];
+            // $response = Prism::text()
+            //     ->using(Provider::Ollama, 'qwen2.5:0.5b')
+            //     ->withSystemPrompt("คุณเป็นคนไทย")
+            //     ->withPrompt('ช่วยอธิบเกี่ยวกับประเทศไทย')
+            //     ->asText();
 
-            $userText = $lastUser['content']
-                ?? collect(Arr::get($lastUser, 'parts', []))->where('type', 'text')->pluck('text')->implode('\n');
-
-            // 2. บันทึก message ไปยังตาราง historys (ภาพในสไลด์)
-            $currentUserId = Auth::user()->id;
-            History::create([
-                'user_id' => $currentUserId,
-                'role' => 'user',
-                'parts' => [
-                    ChunkType::Text->value => $userText
-                ]
-            ]);
-
-            // 3. ดึงข้อมูล history จากตาราง แล้วส่งไปให้ LLM
-            // ระวังอย่าดึงข้อมูลเยอะจนเกินไป ควรใช้ limit ช่วย เพราะจะเปลือง token
-            // อย่าลืมลบ history เก่าที่ไม่ใช้แล้ว
-            $conversationHistory = History::where('user_id', $currentUserId)
-                ->limit(50)
-                ->orderBy('created_at')
-                ->get()
-                ->map(fn(History $history): UserMessage|AssistantMessage => match ($history->role) {
-                    'user' => new UserMessage(content: $history->parts['text'] ?? ''),
-                    'assistant' => new AssistantMessage(content: $history->parts['text'] ?? ''),
-                })->toArray();
-
+            // return ['messages' => [$response->text]];
+            // return response()->json(['reply' => $response->text]);
             $tools = $this->makeTools();
 
             /** @disregard [OPTIONAL CODE] [OPTIONAL DESCRIPTION] */
-            return response()->stream(function () use ($conversationHistory, $currentUserId, $tools) {
-                $parts = [];
+            return response()->stream(function () use ($userText, $historyMessage, $userId, $tools) {
+                // return response()->eventStream(function () use ($userText) {
+                // $stream = Prism::text()
+                //     ->using(Provider::OpenAI, 'gpt-4.1-nano')
+                //     ->usingTemperature(0.2) // ถ้า gpt-4 จะปรับ temperature ได้ตามปกติ
+                //     ->withSystemPrompt('คุณเป็นผู้ช่วยด้านการเขียนโค้ด Laravel Framework ใช้ภาษาทางการ กระชับ ชัดเจน')
+                //     // ->withPrompt($userText)
+                //     // ->withPrompt($historyMessage)
+                //     ->withMessages($historyMessage)
+                //     ->withClientRetry(3, 100)
+                //     ->withClientOptions(['timeout' => 30])
+                //     ->withProviderOptions([
+                //         // 'language' => 'th', // ISO-639-1 code (optional) เฉพาะ OpenAI
+                //     ])->asStream();
 
                 $stream = Prism::text()
                     ->using(Provider::OpenAI, 'gpt-4.1-nano')
+                    // ->using(Provider::Ollama, 'qwen2.5:0.5b')
                     ->usingTemperature(0.2) // ถ้า gpt-4 จะปรับ temperature ได้ตามปกติ
-                    ->withSystemPrompt('คุณเป็นผู้ช่วยส่วนตัวด้านการเขียนโปรแกรม ผู้เชี่ยวชาญด้านสภาพอากาศ เป็นผู้จัดการฝ่าย HR คอยตอบคำถามการลาของพนักงาน โดยใช้ข้อมูลจาก contexts ใช้ภาษาทางการ กระชับ ชัดเจน')
-                    ->withMessages($conversationHistory)
+                    // ->withSystemPrompt('คุณเป็นผู้ช่วยด้านการเขียนโค้ด Laravel Framework ใช้ภาษาทางการ กระชับ ชัดเจน')
+                    ->withSystemPrompt('คุณเป็นผู้ช่วยส่วนตัวด้านการเขียนโปรแกรม ผู้เชี่ยวชาญด้านสภาพอากาศ เป็นผู้จัดการฝ่าย HR ตอบคำถามนโยบายบริษัท ใช้ภาษาทางการ กระชับ ชัดเจน')
+                    ->withMessages($historyMessage)
                     ->withMaxSteps(4)
                     ->withTools($tools)
                     ->withToolChoice(ToolChoice::Auto)
@@ -85,6 +108,8 @@ class ChatController extends Controller
                     ])
                     ->asStream();
 
+
+                $parts = [];
                 foreach ($stream as $response) {
                     $key = $response->chunkType->value;
                     $parts[$key] ??= '';
@@ -93,13 +118,11 @@ class ChatController extends Controller
                     yield $response->text;
                 }
 
-                // 5. เอาคำตอบของ LLM บันทึกกลับไปที่ตาราง history ด้วย
                 if ($parts !== []) {
                     History::create([
-                        'user_id' => $currentUserId,
+                        'user_id' => $userId,
                         'role' => 'assistant',
                         'parts' => $parts,
-                        'created_at' => Carbon::now()
                     ]);
                 }
             });
@@ -220,8 +243,8 @@ class ChatController extends Controller
         //Rag Tools
 
         $ragTool = Tool::as('ragHR')
-            ->for('ค้นหาข้อมูลสวัสดิการของบริษัท')
-            ->withStringParameter('question', 'คำถามจากผู้ใช้เพื่อตอบเกี่ยวกับสวัสดิการของบริษัท')
+            ->for('ค้นหาข้อมูลนโยบายการลางาน')
+            ->withStringParameter('question', 'คำถามจากผู้ใช้เพื่อตอบเกี่ยวกับ HR')
             ->using(function (string $question): string {
                 // Your search implementation
                 $result = $this->rag->askRag($question);

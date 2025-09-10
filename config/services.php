@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'qdrant' => [
+        'host' => env('QDRANT_HOST'),
+        'key' => env('QDRANT_API_KEY'),
+        'collection' => env('QDRANT_COLLECTION'),
+        'vector' => env('QDRANT_VECTOR'),
+    ],
+
+    'rag' => [
+        'top_k' => env('RAG_TOP_K'),
+        'embed_model' => env('RAG_MODEL'),
+    ]
+
 ];

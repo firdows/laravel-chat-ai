@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "343635d641a0aabbdda66f14516b938b",
+    "content-hash": "0e9d6ead02525cdf75a5f7b90e62b051",
     "packages": [
         {
             "name": "brick/math",
@@ -1054,6 +1054,62 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
+            "name": "hkulekci/qdrant",
+            "version": "v0.5.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hkulekci/qdrant-php.git",
+                "reference": "9be8fa3c52514c35f3e6c7db1c34f43335891fa2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hkulekci/qdrant-php/zipball/9be8fa3c52514c35f3e6c7db1c34f43335891fa2",
+                "reference": "9be8fa3c52514c35f3e6c7db1c34f43335891fa2",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "php-http/discovery": "^1.19",
+                "psr/http-client": "^1.0",
+                "psr/http-client-implementation": "^1.0",
+                "psr/http-factory": "^1.0",
+                "psr/http-factory-implementation": "^1.0",
+                "psr/http-message": "^1.0|^2.0",
+                "psr/log": "^1.0|^2.0|^3.0",
+                "webmozart/assert": "^1.11"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.5",
+                "nyholm/psr7": "^1.8@dev",
+                "php-http/mock-client": "1.x-dev",
+                "phpunit/php-code-coverage": "^10.1@dev",
+                "phpunit/phpunit": "^10.0",
+                "symfony/http-client": "^6.4.3|^7.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Qdrant\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Haydar Kulekci",
+                    "email": "haydarkulekci@gmail.com"
+                }
+            ],
+            "description": "PHP Client for Qdrant",
+            "support": {
+                "issues": "https://github.com/hkulekci/qdrant-php/issues",
+                "source": "https://github.com/hkulekci/qdrant-php/tree/v0.5.8"
+            },
+            "time": "2024-11-30T06:03:37+00:00"
+        },
+        {
             "name": "inertiajs/inertia-laravel",
             "version": "v2.0.6",
             "source": {
@@ -1398,6 +1454,70 @@
                 "source": "https://github.com/laravel/prompts/tree/v0.3.6"
             },
             "time": "2025-07-07T14:17:42+00:00"
+        },
+        {
+            "name": "laravel/sanctum",
+            "version": "v4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/sanctum.git",
+                "reference": "fd6df4f79f48a72992e8d29a9c0ee25422a0d677"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/sanctum/zipball/fd6df4f79f48a72992e8d29a9c0ee25422a0d677",
+                "reference": "fd6df4f79f48a72992e8d29a9c0ee25422a0d677",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "illuminate/console": "^11.0|^12.0",
+                "illuminate/contracts": "^11.0|^12.0",
+                "illuminate/database": "^11.0|^12.0",
+                "illuminate/support": "^11.0|^12.0",
+                "php": "^8.2",
+                "symfony/console": "^7.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "orchestra/testbench": "^9.0|^10.0",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^11.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Sanctum\\SanctumServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Sanctum\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel Sanctum provides a featherweight authentication system for SPAs and simple APIs.",
+            "keywords": [
+                "auth",
+                "laravel",
+                "sanctum"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/sanctum/issues",
+                "source": "https://github.com/laravel/sanctum"
+            },
+            "time": "2025-07-09T19:45:24+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2644,6 +2764,85 @@
             "time": "2025-05-08T08:14:37+00:00"
         },
         {
+            "name": "php-http/discovery",
+            "version": "1.20.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/discovery.git",
+                "reference": "82fe4c73ef3363caed49ff8dd1539ba06044910d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/discovery/zipball/82fe4c73ef3363caed49ff8dd1539ba06044910d",
+                "reference": "82fe4c73ef3363caed49ff8dd1539ba06044910d",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0|^2.0",
+                "php": "^7.1 || ^8.0"
+            },
+            "conflict": {
+                "nyholm/psr7": "<1.0",
+                "zendframework/zend-diactoros": "*"
+            },
+            "provide": {
+                "php-http/async-client-implementation": "*",
+                "php-http/client-implementation": "*",
+                "psr/http-client-implementation": "*",
+                "psr/http-factory-implementation": "*",
+                "psr/http-message-implementation": "*"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0.2|^2.0",
+                "graham-campbell/phpspec-skip-example-extension": "^5.0",
+                "php-http/httplug": "^1.0 || ^2.0",
+                "php-http/message-factory": "^1.0",
+                "phpspec/phpspec": "^5.1 || ^6.1 || ^7.3",
+                "sebastian/comparator": "^3.0.5 || ^4.0.8",
+                "symfony/phpunit-bridge": "^6.4.4 || ^7.0.1"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Http\\Discovery\\Composer\\Plugin",
+                "plugin-optional": true
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Discovery\\": "src/"
+                },
+                "exclude-from-classmap": [
+                    "src/Composer/Plugin.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Márk Sági-Kazár",
+                    "email": "mark.sagikazar@gmail.com"
+                }
+            ],
+            "description": "Finds and installs PSR-7, PSR-17, PSR-18 and HTTPlug implementations",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "adapter",
+                "client",
+                "discovery",
+                "factory",
+                "http",
+                "message",
+                "psr17",
+                "psr7"
+            ],
+            "support": {
+                "issues": "https://github.com/php-http/discovery/issues",
+                "source": "https://github.com/php-http/discovery/tree/1.20.0"
+            },
+            "time": "2024-10-02T11:20:13+00:00"
+        },
+        {
             "name": "phpoption/phpoption",
             "version": "1.9.4",
             "source": {
@@ -3407,20 +3606,20 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.9.0",
+            "version": "4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "4e0e23cc785f0724a0e838279a9eb03f28b092a0"
+                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/4e0e23cc785f0724a0e838279a9eb03f28b092a0",
-                "reference": "4e0e23cc785f0724a0e838279a9eb03f28b092a0",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/81f941f6f729b1e3ceea61d9d014f8b6c6800440",
+                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13",
+                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
                 "php": "^8.0",
                 "ramsey/collection": "^1.2 || ^2.0"
             },
@@ -3479,9 +3678,60 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "source": "https://github.com/ramsey/uuid/tree/4.9.0"
+                "source": "https://github.com/ramsey/uuid/tree/4.9.1"
             },
-            "time": "2025-06-25T14:20:11+00:00"
+            "time": "2025-09-04T20:59:21+00:00"
+        },
+        {
+            "name": "smalot/pdfparser",
+            "version": "v2.12.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smalot/pdfparser.git",
+                "reference": "98d31ba34ef5b5a98897ef4b6c3925d502ea53b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/98d31ba34ef5b5a98897ef4b6c3925d502ea53b1",
+                "reference": "98d31ba34ef5b5a98897ef4b6c3925d502ea53b1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-iconv": "*",
+                "ext-zlib": "*",
+                "php": ">=7.1",
+                "symfony/polyfill-mbstring": "^1.18"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Smalot\\PdfParser\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastien MALOT",
+                    "email": "sebastien@malot.fr"
+                }
+            ],
+            "description": "Pdf parser library. Can read and extract information from pdf file.",
+            "homepage": "https://www.pdfparser.org",
+            "keywords": [
+                "extract",
+                "parse",
+                "parser",
+                "pdf",
+                "text"
+            ],
+            "support": {
+                "issues": "https://github.com/smalot/pdfparser/issues",
+                "source": "https://github.com/smalot/pdfparser/tree/v2.12.1"
+            },
+            "time": "2025-07-31T06:19:56+00:00"
         },
         {
             "name": "symfony/clock",
